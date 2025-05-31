@@ -1,0 +1,87 @@
+﻿@page "/Orders"
+@model Order.Web.Pages.OrderModel
+@{
+}
+
+<h2 class="my-4">My Orders</h2>
+@Html.AntiForgeryToken()
+
+<a class="btn btn-primary btn-sm" href="/Order/Edit/">Add</a>
+
+
+@if (Model.Orders == null || Model.Orders.Count == 0)
+{
+    <div class="alert alert-info">No orders found.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Client</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr id="row-@order.Id">
+                    <td>@order.Id</td>
+                    <td>@order.OrderDate.ToShortDateString()</td>
+                    <td>$@order.Total</td>
+                    <td>@order.ClientId</td>
+                    <td class="d-flex gap-2">
+                        <a class="btn btn-primary btn-sm" href="/Order/Edit/@order.Id">Edit</a>
+                        <button class="btn btn-danger btn-sm" onclick="deleteOrder('@order.Id')">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script>
+        async function editOrder(orderId) {
+            const response = await fetch(`?handler=Edit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: new URLSearchParams({ orderId })
+            });
+
+            if (response.ok) {
+                // Redirect or show a success message
+                window.location.href = `/Order/Edit?id=${orderId}`;
+            } else {
+                alert("Failed to edit the order.");
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            //if (!confirm("Are you sure you want to delete this order?")) return;
+            debugger;
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            const response = await fetch(`?handler=DeleteOrder`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ orderId })
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Failed to delete the order.");
+            }
+        }
+    </script>
+}

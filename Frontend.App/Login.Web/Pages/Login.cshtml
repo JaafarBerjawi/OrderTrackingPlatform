@@ -1,0 +1,78 @@
+﻿@page "/Login"
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+@inject IStringLocalizer<Login.Web.Pages.LoginModel> Localizer
+@model Login.Web.Pages.LoginModel
+@{
+    ViewData["Title"] = "Login";
+    var currentCulture = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+
+            Array.from(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })();
+    </script>
+    <script>
+
+        document.getElementById("languageSelect").addEventListener("change", function () {
+            var selectedCulture = this.value;
+            window.location.href = `/Login?handler=ChangeCulture&culture=${selectedCulture}`;
+        });
+    </script>
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h2 class="text-center mb-4">Login</h2>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">@Model.ErrorMessage</div>
+            }
+
+            <form method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">@Localizer["Username"]</label>
+                    <input id="username" name="username" type="email" class="form-control" required />
+                    <div class="invalid-feedback">
+                        Username is required.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">@Localizer["Password"]</label>
+                    <input id="password" name="password" type="password" class="form-control" minlength="8" required />
+                    <div class="invalid-feedback">
+                        Password is required and must be at least 8 characters.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-4 mt-3">
+            <select id="languageSelect" class="form-select w-auto">
+                <option value="en" @(currentCulture == "en" ? "selected" : "")>English</option>
+                <option value="ar" @(currentCulture == "ar" ? "selected" : "")>العربية</option>
+            </select>
+        </div>
+    </div>
+</div>
