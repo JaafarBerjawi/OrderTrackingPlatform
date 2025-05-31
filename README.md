@@ -22,18 +22,18 @@ The platform consists of the following microservices:
 *   **ProductService (`ProductService/ProductService.API`)**:
     *   Manages the product catalog.
     *   Provides CRUD (Create, Read, Update, Delete) operations for products.
-    *   Stores product information like name, description, price, and stock levels.
+    *   Stores product information.
 
 *   **OrderService (`OrderService/OrderService.API`)**:
     *   Manages customer orders.
-    *   Handles order creation, updates, and status tracking.
+    *   Handles order creation, updates, and deletes.
     *   Interacts with ProductService to verify product availability.
 
 *   **Frontend.App (`Frontend.App/Frontend.App.Client`)**:
     *   The client-side user interface for interacting with the platform.
     *   Allows users to browse products, place orders, and view order history.
     *   Communicates with the backend services via the APIGateway.
-    *   This is a Blazor WebAssembly application.
+    *   This is a Razor Pages application.
 
 ## Development Environment Setup
 
@@ -87,8 +87,7 @@ Once the application is running, you can access the frontend:
 *   **Frontend Application**: Open your web browser and navigate to `http://localhost:5000`.
 
 You can then use the frontend to:
-*   Register and log in as a user (via AuthService).
-*   Browse products (from ProductService).
+*   Log in as a user (via AuthService).
 *   Place orders (managed by OrderService).
 
 The API Gateway is accessible at `http://localhost:8080`, but direct interaction is typically done through the frontend or API testing tools for specific service endpoints (e.g., using Postman).
