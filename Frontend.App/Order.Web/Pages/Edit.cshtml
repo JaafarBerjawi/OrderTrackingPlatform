@@ -10,6 +10,7 @@
 
 <form method="post" class="mt-4">
 	@Html.AntiForgeryToken()
+	@Html.HiddenFor(m => m.Order.Id)
 	<div class="mb-3">
 		<label asp-for="Model.Order.ClientId" class="form-label">Client</label>
 		@Html.DropDownListFor(model => model.Order.ClientId, Model.Clients, "-- Select Client --", new { @class = "form-select", required = "required" })
@@ -17,7 +18,8 @@
 	</div>
 	<div class="mb-3">
 		<label asp-for="Model.Order.OrderDate" class="form-label">Order Date</label>
-		@Html.TextBoxFor(model => model.Order.OrderDate, "{0:MM/dd/yyy}", new { @type = "datetime", @class = "form-control", @Value = @Model.Order.OrderDate.ToString("MM/dd/yyyy"), required = "required" })
+		@Html.TextBoxFor(model => model.Order.OrderDate, "{0:MM/dd/yyy}", 
+		new { @type = "datetime", @class = "form-control", @Value = @Model.Order.OrderDate.ToString("MM/dd/yyyy"), required = "required" })
 	</div>
 	<div class="mb-3">
 		<label asp-for="Model.Order.ProductId" class="form-label">Product</label>

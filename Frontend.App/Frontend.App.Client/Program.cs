@@ -2,6 +2,7 @@ using Login.Business.Interfaces;
 using Login.Business.Services;
 using Login.Web.Middlewares; // Contains AuthenticationMiddleware
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using Order.Application.Interfaces;
 using Order.Application.Services;
@@ -28,6 +29,11 @@ builder.Services.AddRazorPages()
 builder.Services.AddSession();
 // Add HttpContextAccessor to allow access to HttpContext from services
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddDataProtection()
+	.PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
+	.SetApplicationName("OrderTrackingFrontend");
+
 
 // Configure a typed HttpClient "DefaultClient" for making requests to backend APIs
 builder.Services.AddHttpClient<DefaultHttpClient>("DefaultClient", client =>

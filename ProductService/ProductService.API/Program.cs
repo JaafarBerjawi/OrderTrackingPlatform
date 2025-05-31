@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using ProductService.Infrastructure.Data;
 using ProductService.Infrastructure.Extensions;
 using Serilog;
 using Serilog.Events;
@@ -6,10 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog for structured logging
 Log.Logger = new LoggerConfiguration()
-	.MinimumLevel.Override("Microsoft", LogEventLevel.Information) // Optionally override log levels for specific sources
-	.Enrich.FromLogContext() // Enrich logs with context information
-	.WriteTo.Console()       // Write logs to the console
-	.CreateLogger();
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information) // Optionally override log levels for specific sources
+    .Enrich.FromLogContext() // Enrich logs with context information
+    .WriteTo.Console()       // Write logs to the console
+    .CreateLogger();
 
 builder.Host.UseSerilog(); // Use Serilog as the logging provider
 
@@ -32,14 +34,20 @@ builder.Services.AddSwaggerGen();          // Adds Swagger generation services
 
 var app = builder.Build(); // Build the WebApplication instance
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = app.Services.GetRequiredService<ProductDbContext>();
+    context.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline (middleware).
 // The order of middleware registration is important.
 
 // In development environment, enable Swagger and Swagger UI for API testing and documentation
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();       // Serves the Swagger JSON specification (api-docs)
-	app.UseSwaggerUI();     // Serves the Swagger UI HTML page
+    app.UseSwagger();       // Serves the Swagger JSON specification (api-docs)
+    app.UseSwaggerUI();     // Serves the Swagger UI HTML page
 }
 
 // Redirect HTTP requests to HTTPS for enhanced security

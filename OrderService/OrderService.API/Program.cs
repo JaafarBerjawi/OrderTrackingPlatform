@@ -1,6 +1,8 @@
 using Serilog.Events;
 using Serilog;
 using OrderService.Infrastructure.Extensions;
+using OrderService.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +34,12 @@ builder.Services.AddEndpointsApiExplorer(); // Required for Swagger with minimal
 builder.Services.AddSwaggerGen();          // Adds Swagger generation services
 
 var app = builder.Build(); // Build the WebApplication instance
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = app.Services.GetRequiredService<OrderDbContext>();
+    context.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline (middleware).
 // The order of middleware registration is important.
