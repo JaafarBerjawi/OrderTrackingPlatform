@@ -23,7 +23,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 # Copies the .csproj file into the container and places it in the APIGateway.Web/ directory.
 # This is done first to leverage Docker's layer caching for faster subsequent builds if only code changes.
-COPY ["APIGateway.Web.csproj", "APIGateway.Web/"]
+COPY . .
 # Restores NuGet packages for the project.
 RUN dotnet restore "./APIGateway.Web/APIGateway.Web.csproj"
 # Sets the working directory to the root of the source files for the COPY . . command.

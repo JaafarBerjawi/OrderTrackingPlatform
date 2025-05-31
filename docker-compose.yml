@@ -18,7 +18,7 @@ services:
     image: api-gateway
     container_name: ordertracker_gateway
     build:
-      context: ./APIGateway/APIGateway.Web
+      context: ./APIGateway
       dockerfile: Dockerfile
     environment:
       - Downstream__ProductServiceHealth=http://product-service/health
@@ -27,7 +27,7 @@ services:
       - ReverseProxy__Clusters__product-cluster__Destinations__product-destination-1__Address=http://product-service
       - ReverseProxy__Clusters__order-cluster__Destinations__order-destination-1__Address=http://order-service
     ports:
-      - "8080:80" # Only gateway is exposed externally
+      - "8080:8080" # Only gateway is exposed externally
     depends_on:
       - auth-service
       - product-service
@@ -39,10 +39,11 @@ services:
     image: auth-service
     container_name: ordertracker_auth
     build:
-      context: ./AuthService/AuthService.Web
+      context: ./AuthService
       dockerfile: Dockerfile
     environment:
-      - ConnectionStrings__AuthDatabase=Host=postgres;Database=ordertracker_db;Username=ordertracker_user;Password=ordertracker_pass
+      - ConnectionStrings__AuthDatabase=Host=postgres;Database=ordertracker_auth;Username=ordertracker_user;Password=ordertracker_pass
+      - ASPNETCORE_URLS=http://+:80  
     networks:
       - app-network
     depends_on:
@@ -52,10 +53,11 @@ services:
     image: product-service
     container_name: ordertracker_product
     build:
-      context: ./ProductService/ProductService.API
+      context: ./ProductService
       dockerfile: Dockerfile
     environment:
-      - ConnectionStrings__ProductDatabase=Host=postgres;Database=ordertracker_db;Username=ordertracker_user;Password=ordertracker_pass
+      - ConnectionStrings__ProductDatabase=Host=postgres;Database=ordertracker_product;Username=ordertracker_user;Password=ordertracker_pass
+      - ASPNETCORE_URLS=http://+:80  
     networks:
       - app-network
     depends_on:
@@ -65,10 +67,12 @@ services:
     image: order-service
     container_name: ordertracker_order
     build:
-      context: ./OrderService/OrderService.API
+      context: ./OrderService
       dockerfile: Dockerfile
     environment:
-      - ConnectionStrings__OrderDatabase=Host=postgres;Database=ordertracker_db;Username=ordertracker_user;Password=ordertracker_pass
+      - ConnectionStrings__OrderDatabase=Host=postgres;Database=ordertracker_order;Username=ordertracker_user;Password=ordertracker_pass
+      - Services__ProductServiceUrl=http://product-service
+      - ASPNETCORE_URLS=http://+:80  
     networks:
       - app-network
     depends_on:
@@ -77,20 +81,23 @@ services:
 
   frontend:
     build:
-      context: ./Frontend.App/Frontend.App.Client
+      context: ./Frontend.App
       dockerfile: Dockerfile
     environment:
-      - ClientAPIs__Auth=http://api-gateway
+      - ClientAPIs__Auth=http://api-gateway:8080
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5000:80"  # exposed for user access
+      - "5000:8080"  # exposed for user access
     depends_on:
       - api-gateway
     networks:
       - app-network
+    volumes:
+    - frontend_keyring:/root/.aspnet/DataProtection-Keys
 
 volumes:
   postgres_data:
+  frontend_keyring:
 
 networks:
   app-network: {}

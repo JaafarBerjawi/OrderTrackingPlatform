@@ -1,8 +1,10 @@
-using Serilog;
-using Auth.Infrastructure.Extensions;
 using Auth.Application.Interfaces;
+using Auth.Infrastructure.Data;
+using Auth.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Text; // Add this import at the top of the file
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,6 +81,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();       // Serves the Swagger JSON specification
     app.UseSwaggerUI();     // Serves the Swagger UI HTML page
+}
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    dbContext.Database.Migrate(); // This will apply pending migrations
 }
 
 // Redirect HTTP requests to HTTPS for security
