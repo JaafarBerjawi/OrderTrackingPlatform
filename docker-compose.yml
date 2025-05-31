@@ -18,7 +18,7 @@ services:
     image: api-gateway
     container_name: ordertracker_gateway
     build:
-      context: ./APIGateway/APIGateway.Web
+      context: ./APIGateway
       dockerfile: Dockerfile
     environment:
       - Downstream__ProductServiceHealth=http://product-service/health
@@ -39,7 +39,7 @@ services:
     image: auth-service
     container_name: ordertracker_auth
     build:
-      context: ./AuthService/AuthService.Web
+      context: ./AuthService
       dockerfile: Dockerfile
     environment:
       - ConnectionStrings__AuthDatabase=Host=postgres;Database=ordertracker_db;Username=ordertracker_user;Password=ordertracker_pass
@@ -52,7 +52,7 @@ services:
     image: product-service
     container_name: ordertracker_product
     build:
-      context: ./ProductService/ProductService.API
+      context: ./ProductService
       dockerfile: Dockerfile
     environment:
       - ConnectionStrings__ProductDatabase=Host=postgres;Database=ordertracker_db;Username=ordertracker_user;Password=ordertracker_pass
@@ -65,7 +65,7 @@ services:
     image: order-service
     container_name: ordertracker_order
     build:
-      context: ./OrderService/OrderService.API
+      context: ./OrderService
       dockerfile: Dockerfile
     environment:
       - ConnectionStrings__OrderDatabase=Host=postgres;Database=ordertracker_db;Username=ordertracker_user;Password=ordertracker_pass
@@ -77,7 +77,7 @@ services:
 
   frontend:
     build:
-      context: ./Frontend.App/Frontend.App.Client
+      context: ./Frontend.App
       dockerfile: Dockerfile
     environment:
       - ClientAPIs__Auth=http://api-gateway
